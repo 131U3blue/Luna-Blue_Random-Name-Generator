@@ -1,0 +1,77 @@
+from random import randint
+import pygame
+import sys
+
+filename = 'competition.txt'
+
+with open (filename) as f:
+    entrants = f.readlines()
+    selection = randint(0,len(entrants))
+    print(entrants[selection])
+
+class Main:
+    clock = pygame.time.Clock()
+
+    def __init__(self):
+        pygame.init()
+        #self.screen = pygame.display.set_mode((1200, 800)) # For Testing Only
+        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+        self.screen_rect = self.screen.get_rect()
+        self.screen_width = self.screen.get_rect().width
+        self.screen_height = self.screen.get_rect().height
+        self.bg = pygame.image.load('away with you-01.png')
+        self.filename = 'competition.txt'
+        self.text_colour = (86,153,206)
+        self.highlight = (255,255,255)
+        self.winner = ''
+        self.selection = 0
+        self.entrants = ''
+        self.counter = 0
+        self.start = False
+
+    def run_game(self):
+        while True:
+            self._update_screen()
+            self._check_events()
+            if self.counter < 30 and self.start == True:
+                self.select_winner()
+
+
+    def select_winner(self):
+        with open(filename) as f:
+            self.entrants = f.readlines()
+            self.selection = randint(0, len(entrants))
+            self.winner = self.entrants[self.selection]
+        self.counter += 1
+
+    def _update_screen(self):
+        self.screen.blit(self.bg, (0,0))
+        self.menu_text = pygame.font.Font('BebasNeue-Regular.ttf', 128)
+        if self.start == False:
+            self.text_surface_obj = self.menu_text.render('LUNE BLUE COMPETITION', True, self.text_colour,
+                                                          self.highlight)
+        else:
+            self.text_surface_obj = self.menu_text.render(self.winner, True, self.text_colour,
+                                                          self.highlight)
+        self.text_rect_obj = self.text_surface_obj.get_rect(center=(self.screen_width, self.screen_height))
+        self.text_rect_obj.center = (self.screen_rect.center)
+        self.screen.blit(self.text_surface_obj, self.text_rect_obj)
+        pygame.display.flip()
+
+    def _check_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                self._check_keydown_event(event)
+
+    def _check_keydown_event(self, event):
+        if event.key == pygame.K_SPACE:
+            self.start = True
+        if event.key == pygame.K_ESCAPE:
+            pygame.quit()
+            sys.exit()
+
+if __name__ == '__main__':
+    fw = Main()
+    fw.run_game()
